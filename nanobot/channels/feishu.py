@@ -292,11 +292,22 @@ class FeishuChannel(BaseChannel):
 
         # Start WebSocket client in a separate thread with reconnect loop
         def run_ws():
+            # Fix: lark SDK uses a global event loop variable
+            # We need to replace it with a new loop for this thread
+            import asyncio
+            import lark_oapi.ws.client as lark_ws_client
+
+            # Create new event loop for this thread
+            new_loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(new_loop)
+            # Replace lark SDK's global loop with our thread's loop
+            lark_ws_client.loop = new_loop
+
             while self._running:
                 try:
                     self._ws_client.start()
                 except Exception as e:
-                    logger.warning("Feishu WebSocket error: {}", e)
+                    logger.warning("Feishu WebSocket disconnected: {}", e)
                 if self._running:
                     import time
                     time.sleep(5)

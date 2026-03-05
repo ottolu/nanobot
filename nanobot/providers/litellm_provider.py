@@ -230,8 +230,11 @@ class LiteLLMProvider(LLMProvider):
             kwargs["api_base"] = self.api_base
 
         # Pass extra headers (e.g. APP-Code for AiHubMix)
-        if self.extra_headers:
-            kwargs["extra_headers"] = self.extra_headers
+        headers = dict(self.extra_headers) if self.extra_headers else {}
+        # Prevent compressed responses that cause UTF-8 decode errors
+        if "Accept-Encoding" not in headers:
+            headers["Accept-Encoding"] = "identity"
+        kwargs["extra_headers"] = headers
         
         if reasoning_effort:
             kwargs["reasoning_effort"] = reasoning_effort
