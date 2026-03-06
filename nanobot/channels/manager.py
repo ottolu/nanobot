@@ -149,6 +149,18 @@ class ChannelManager:
             except ImportError as e:
                 logger.warning("Matrix channel not available: {}", e)
 
+        # WebUI channel
+        if self.config.channels.webui.enabled:
+            try:
+                from nanobot.channels.webui import WebUIChannel
+                self.channels["webui"] = WebUIChannel(
+                    self.config.channels.webui,
+                    self.bus,
+                )
+                logger.info("WebUI channel enabled")
+            except ImportError as e:
+                logger.warning("WebUI channel not available: {}", e)
+
         self._validate_allow_from()
 
     def _validate_allow_from(self) -> None:

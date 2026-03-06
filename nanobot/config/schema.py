@@ -200,6 +200,24 @@ class MatrixConfig(Base):
     group_allow_from: list[str] = Field(default_factory=list)
     allow_room_mentions: bool = False
 
+class WebUIAuthConfig(Base):
+    """WebUI authentication configuration."""
+
+    enabled: bool = False
+    token: str = ""  # Simple bearer token for API/WebSocket auth
+
+
+class WebUIConfig(Base):
+    """WebUI channel configuration."""
+
+    enabled: bool = False
+    host: str = "0.0.0.0"
+    port: int = 3000
+    allow_from: list[str] = Field(default_factory=lambda: ["*"])  # Default: allow all
+    auth: WebUIAuthConfig = Field(default_factory=WebUIAuthConfig)
+    workspace: str = "~/.nanobot/workspace"  # Workspace path for session manager
+
+
 class ChannelsConfig(Base):
     """Configuration for chat channels."""
 
@@ -215,6 +233,7 @@ class ChannelsConfig(Base):
     slack: SlackConfig = Field(default_factory=SlackConfig)
     qq: QQConfig = Field(default_factory=QQConfig)
     matrix: MatrixConfig = Field(default_factory=MatrixConfig)
+    webui: WebUIConfig = Field(default_factory=WebUIConfig)
 
 
 class AgentDefaults(Base):
